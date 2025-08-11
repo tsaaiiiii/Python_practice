@@ -7,7 +7,9 @@
 
 
 # 基本路由設定範例
-from fastapi import FastAPI
+from typing import List
+from fastapi import FastAPI, Query
+
 app = FastAPI() # FastAPI 物件放在變數 app 裡面
 
 # 建立網站首頁 「index」名稱可以自己取
@@ -37,3 +39,20 @@ def getUser(user_id):
 def squareNumber(number:int):
     squared_value  = number**2
     return { "origin" : number, "squared": squared_value }
+
+# practice 2 - 路由與要求字串的練習
+# 處理路徑 /greet?name=John
+@app.get("/greet")
+def greet(name):
+    return { "message": f"Hello, {name}!" }
+
+# 處理路徑 /multiply?num1=3&num2=4
+@app.get("/multiply")
+def multiply(num1: int, num2: int):
+    result = num1*num2
+    return { "result" : result}
+
+# 處理路徑 /product?id=3&id=4&id=10
+@app.get("/product")
+def product(id: List[int] = Query(...)):
+    return {"ids": id}
