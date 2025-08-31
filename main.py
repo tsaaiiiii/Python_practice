@@ -106,3 +106,37 @@ def getItems(
 @app.get("/echo/{name}")
 def echoName(name:Annotated[str,Path(min_length=1, max_length=10)]):
     return {"echo": name}
+
+
+# 練習：回應格式 response
+from fastapi.responses import JSONResponse
+# 即使沒用 JsonResponse，fastapi 也是預設將回應轉換為 JSON 格式
+@app.get("/")
+def index():
+    return JSONResponse({"message": "Hello, World!"})
+
+# 練習：回應格式 純字串
+# /text?text=Hello
+from fastapi.responses import PlainTextResponse
+@app.get("/text")
+def textTest(text):
+    return PlainTextResponse(f"<h2>Hello, World!</h2> {text}")
+
+from fastapi.responses import HTMLResponse
+@app.get("/html")
+def htmlTest():
+    return HTMLResponse("<h1>Hello, World!</h1> <p>This is a paragraph.</p>")
+
+from fastapi.responses import FileResponse
+@app.get("/file")
+def fileTest():
+    return FileResponse("home.html")
+
+@app.get("/img/logo")
+def imgLogo():
+    return FileResponse("logo.png")
+
+from fastapi.responses import RedirectResponse
+@app.get("/redirect")
+def redirectTest():
+    return RedirectResponse("/")
