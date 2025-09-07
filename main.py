@@ -13,9 +13,9 @@ from fastapi import FastAPI, Query, Path
 app = FastAPI() # FastAPI 物件放在變數 app 裡面
 
 # 建立網站首頁 「index」名稱可以自己取
-@app.get("/")
-def index():
-    return {"x":3,"y":4}
+# @app.get("/")
+# def index():
+#     return {"x":3,"y":4}
 
 @app.get('/data')
 def getData():
@@ -111,7 +111,7 @@ def echoName(name:Annotated[str,Path(min_length=1, max_length=10)]):
 # 練習：回應格式 response
 from fastapi.responses import JSONResponse
 # 即使沒用 JsonResponse，fastapi 也是預設將回應轉換為 JSON 格式
-@app.get("/")
+@app.get("/hello-message")
 def index():
     return JSONResponse({"message": "Hello, World!"})
 
@@ -122,21 +122,45 @@ from fastapi.responses import PlainTextResponse
 def textTest(text):
     return PlainTextResponse(f"<h2>Hello, World!</h2> {text}")
 
+# 練習：回應格式 HTML
 from fastapi.responses import HTMLResponse
 @app.get("/html")
 def htmlTest():
     return HTMLResponse("<h1>Hello, World!</h1> <p>This is a paragraph.</p>")
 
+# 練習：回應檔案-HTML
 from fastapi.responses import FileResponse
 @app.get("/file")
 def fileTest():
     return FileResponse("home.html")
 
+# 練習：回應檔案-圖片
 @app.get("/img/logo")
 def imgLogo():
     return FileResponse("logo.png")
 
+# 練習: 重新導向 Redirect
+# /redirect
 from fastapi.responses import RedirectResponse
 @app.get("/redirect")
 def redirectTest():
     return RedirectResponse("/")
+
+
+# 靜態檔案（回傳給前端）：沒有執行任何程式邏輯，直接回傳檔案內容
+# example
+from fastapi.responses import FileResponse
+@app.get("/file/test")
+def index():
+    return FileResponse("home.html")
+
+# 處理多個靜態檔案
+# 靜態檔案的處理通常會擺在最下方，才不會影響其他路由
+# http://127.0.0.1:8000/public/home.html
+# http://127.0.0.1:8000/public/img/logo.png 因為在 www 裡面的 img 資料夾
+from fastapi.staticfiles import StaticFiles # StaticFiles 可以「統一」處理靜態檔案
+app.mount("/public",StaticFiles(directory='www'))
+
+# 上面的方法，需要在路徑帶上檔案名稱，如果想要完成像是「路徑是首頁，但會對應到一個 html 檔案」時的做法
+# 要將對應的 html 檔案命名為 index.html
+app.mount("/", StaticFiles(directory="www", html=True))
